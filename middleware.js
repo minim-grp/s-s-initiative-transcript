@@ -1,78 +1,94 @@
-import { NextResponse } from 'next/server'
-
+// middleware.js
 const AUTH_COOKIE_NAME = 'initiativen_auth'
-const PASSWORD = 'y1$Qi!bDVRc1*NBp' // ← ÄNDERE DAS HIER! (mind. 12 Zeichen, komplex)
+const PASSWORD = 'y1$Qi!bDVRc1*NBp' 
 
-export function middleware(request) {
-  const url = request.nextUrl
-  const authCookie = request.cookies.get(AUTH_COOKIE_NAME)?.value
+export default async function middleware(request) {
+  const url = new URL(request.url)
+  const cookieHeader = request.headers.get('cookie') || ''
+  
+  // Einfacher Check, ob der Cookie existiert
+  const hasAuth = cookieHeader.includes(`${AUTH_COOKIE_NAME}=${PASSWORD}`)
 
-  // Wenn Passwort schon im Cookie → weiter
-  if (authCookie === PASSWORD) {
-    return NextResponse.next()
+  // 1. Wenn authentifiziert -> Weiterleitung zur angeforderten Ressource
+  if (hasAuth) {
+    return // undefined bedeutet: Anfrage einfach durchlaufen lassen
   }
 
-  // Auth-Seite anzeigen oder prüfen
-  if (url.pathname === '/auth') {
-    if (request.method === 'POST') {
-      const formData = request.formData()
+  // 2. Login-Logik (POST-Request an /auth)
+  if (url.pathname === '/auth' && request.method === 'POST') {
+    try {
+      const formData = await request.formData()
       const enteredPassword = formData.get('password')
 
       if (enteredPassword === PASSWORD) {
-        const response = NextResponse.redirect(new URL('/', request.url))
-        response.cookies.set({
-          name: AUTH_COOKIE_NAME,
-          value: PASSWORD,
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-          path: '/',
-          maxAge: 60 * 60 * 24 * 30 // 30 Tage
+        // Erfolg: Umleiten auf Home + Cookie setzen
+        const response = new Response(null, {
+          status: 307,
+          headers: { 'Location': '/' }
         })
+        response.headers.append('Set-Cookie', `${AUTH_COOKIE_NAME}=${PASSWORD}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`)
         return response
-      } else {
-        return new Response(`
-          <html>
-            <head><title>Login</title></head>
-            <body style="font-family:sans-serif; text-align:center; margin-top:100px;">
-              <h2>Falsches Passwort</h2>
-              <form method="POST">
-                <input type="password" name="password" placeholder="Passwort" style="padding:12px; font-size:18px; width:300px;">
-                <button type="submit" style="padding:12px 24px; font-size:18px; margin-left:10px;">Login</button>
-              </form>
-              <p style="color:red;">Falsches Passwort – erneut versuchen</p>
-            </body>
-          </html>
-        `, {
-          status: 401,
-          headers: { 'Content-Type': 'text/html' }
-        })
       }
+    } catch (e) {
+      // Fehler beim Parsen von Form-Data
     }
-
-    // GET auf /auth → Login-Formular anzeigen
-    return new Response(`
-      <html>
-        <head><title>Initiativenplaner Login</title></head>
-        <body style="font-family:sans-serif; text-align:center; margin-top:100px;">
-          <h2>Zugriff geschützt</h2>
-          <p>Bitte Passwort eingeben</p>
-          <form method="POST">
-            <input type="password" name="password" placeholder="Passwort" style="padding:12px; font-size:18px; width:300px;">
-            <button type="submit" style="padding:12px 24px; font-size:18px; margin-left:10px;">Login</button>
-          </form>
-        </body>
-      </html>
-    `, {
-      status: 200,
-      headers: { 'Content-Type': 'text/html' }
+    
+    // Falsches Passwort
+    return new Response(getLoginHtml(true), {
+      status: 401,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
     })
   }
 
-  // Alles andere → zu /auth umleiten
-  return NextResponse.redirect(new URL('/auth', request.url))
+  // 3. Login-Seite anzeigen (GET auf /auth)
+  if (url.pathname === '/auth') {
+    return new Response(getLoginHtml(false), {
+      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    })
+  }
+
+  // 4. Alle anderen Seiten -> Umleiten zu /auth (außer statische Assets)
+  const excludedPaths = ['/favicon.ico', '/logo-sands.svg']
+  if (!excludedPaths.includes(url.pathname)) {
+    return new Response(null, {
+      status: 307,
+      headers: { 'Location': '/auth' }
+    })
+  }
 }
 
+// Hilfsfunktion für das HTML (sauberer getrennt)
+function getLoginHtml(isError) {
+  return `
+    <html>
+      <head>
+        <title>Initiativenplaner Login</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f8fafc; }
+          .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 350px; }
+          input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+          button { width: 100%; padding: 12px; background: #72974c; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+          .error { color: #dc2626; font-size: 14px; margin-top: 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h2>Zugriff geschützt</h2>
+          <p>Bitte Passwort eingeben</p>
+          <form method="POST" action="/auth">
+            <input type="password" name="password" placeholder="Passwort" required autofocus>
+            <button type="submit">Login</button>
+          </form>
+          ${isError ? '<p class="error">Falsches Passwort – bitte erneut versuchen.</p>' : ''}
+        </div>
+      </body>
+    </html>
+  `
+}
+
+// WICHTIG für Vercel (Matcher)
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 }
