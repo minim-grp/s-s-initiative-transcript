@@ -11,7 +11,6 @@
   <style>
     body { font-family: 'Poppins', sans-serif; background: #ffffff; color: #30343B; }
     .primary-green { color: #72974c; }
-    .bg-primary-green { background-color: #72974c; }
     .btn-primary { 
       background-color: #72974c; 
       color: white; 
@@ -65,11 +64,13 @@
       <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div class="space-y-8 md:space-y-10">
           <h1 class="leading-none">
-            Planen.<br>Strukturieren.<br><span class="primary-green">Umsetzen.</span>
+            Initiative anstoßen.<br>
+            Struktur schaffen.<br>
+            <span class="primary-green">Erfolgreich umsetzen.</span>
           </h1>
           <p class="text-xl md:text-2xl text-gray-700 max-w-xl leading-relaxed">
-            Sprich deine Initiative ein – Wispr Flow oder Browser-Mikrofon – 
-            <strong>automatisch</strong> als strukturierte Word-Datei in SharePoint.
+            Sprich deine Initiative einfach ein – mit Wispr Flow oder Browser-Mikrofon –<br>
+            automatisch als strukturierte Word-Datei in SharePoint.
           </p>
           <div class="flex flex-col sm:flex-row gap-5 pt-4">
             <a href="#tool" class="btn-primary inline-flex items-center justify-center gap-3">
@@ -97,9 +98,15 @@
     <div class="container-xl max-w-4xl">
       <div class="glass-card p-10 md:p-16">
         
-        <!-- NEU: Kunde / Projektname – Pflichtfeld ganz oben -->
+        <!-- Kunde / Projektname – mit klarem Hinweis -->
         <div class="mb-10">
-          <label class="block text-xl font-semibold mb-4 primary-green">Kunde / Projektname <span class="text-red-600">*</span></label>
+          <label class="block text-xl font-semibold mb-2 primary-green">
+            Kunde / Projektname <span class="text-red-600">*</span>
+          </label>
+          <p class="text-base text-gray-600 mb-3 leading-relaxed">
+            <strong>Wichtig:</strong> Nenne bitte <strong>am Anfang</strong> immer den Kunden- oder Projektnamen (z. B. „Kunde XY – Neubau 2026“ oder „Projekt ABC“).  
+            Nur so wird die fertige Datei automatisch im richtigen SharePoint-Ordner gespeichert.
+          </p>
           <input 
             type="text" 
             id="project" 
@@ -107,7 +114,7 @@
             placeholder="z. B. Kunde XY – Neubau 2026 oder Projekt ABC"
             required
           >
-          <div id="projectError" class="error">Bitte geben Sie den Kunden- oder Projektnamen ein (wird für den Speicherort benötigt).</div>
+          <div id="projectError" class="error">Bitte geben Sie den Kunden- oder Projektnamen ein.</div>
         </div>
 
         <div class="mb-10">
@@ -122,7 +129,7 @@
         <div class="relative mb-10">
           <textarea id="text" rows="9"
             class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] resize-none"
-            placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen...&#10;&#10;Tipp: Beginne mit 'Kunde XY – Projekt ABC...' damit die Datei im richtigen Ordner gespeichert wird."></textarea>
+            placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen...&#10;&#10;Tipp: Beginne mit dem Kunden-/Projektnamen (z. B. 'Kunde XY – Neubau 2026...')"></textarea>
           <div id="wordCount" class="absolute bottom-5 right-6 text-base text-gray-600 font-medium">0 Wörter</div>
         </div>
 
@@ -182,7 +189,7 @@
       const project = projectInput.value.trim();
       const text = textarea.value.trim();
 
-      // Validierung: Kunde/Projekt muss angegeben sein
+      // Validierung: Projektname muss angegeben sein
       if (!project) {
         projectError.style.display = 'block';
         projectInput.focus();
@@ -208,7 +215,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            project: project,           // ← das neue Feld für n8n
+            project: project,           // für n8n → dynamischer Ordner
             transcript: text,
             template: templateSelect.value 
           })
