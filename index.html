@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wispr → MatterFact | scope & solve</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    body { background: #274055; }
+    .hero-bg {
+      background: linear-gradient(rgba(39,64,85,0.88), rgba(10,61,42,0.92)),
+                  url('https://picsum.photos/id/1018/1920/1080') center/cover no-repeat fixed;
+    }
+  </style>
+</head>
+<body class="text-white font-sans">
+
+  <nav class="bg-[#274055]/95 backdrop-blur-md border-b border-[#607848]/30 fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl text-[#607848] leading-none">∞</span>
+        <span class="text-2xl font-bold tracking-tight">scope<span class="text-[#607848]">&amp;</span>solve</span>
+      </div>
+      <div class="text-lg font-medium">Wispr → MatterFact</div>
+      <a href="#" onclick="window.location.reload()" class="flex items-center gap-2 text-[#607848] hover:text-white transition">
+        <i class="fa-solid fa-rotate"></i> Neu starten
+      </a>
+    </div>
+  </nav>
+
+  <section class="hero-bg min-h-screen flex items-center pt-20">
+    <div class="max-w-4xl mx-auto text-center px-6">
+      <h1 class="text-6xl md:text-7xl font-bold leading-none mb-6">
+        Sprich.<br>Strukturiere.<br><span class="text-[#607848]">Speichere.</span>
+      </h1>
+      <p class="text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
+        Wispr Flow oder Browser-Mikrofon → automatisch in SharePoint
+      </p>
+
+      <div class="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-10 shadow-2xl max-w-2xl mx-auto">
+        
+        <!-- Template Auswahl -->
+        <div class="mb-6">
+          <label class="block text-lg mb-2">Dokument-Typ:</label>
+          <select id="template" class="w-full bg-white/10 border border-white/30 rounded-xl p-4 text-white focus:outline-none focus:border-[#607848]">
+            <option value="matterfact">MatterFact Standard</option>
+            <option value="other">Anderes Template</option>
+          </select>
+        </div>
+
+        <!-- Textarea + Wortzähler -->
+        <div class="relative">
+          <textarea id="text" rows="7"
+            class="w-full bg-white/5 border border-white/30 rounded-2xl p-6 text-lg placeholder-gray-400 focus:outline-none focus:border-[#607848] resize-none"
+            placeholder="Klicke hier → Wispr aktivieren oder Mikrofon-Button nutzen..."></textarea>
+          <div id="wordCount" class="absolute bottom-3 right-4 text-sm text-gray-400">0 Wörter</div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex flex-col sm:flex-row gap-4">
+          <button onclick="startSpeech()" 
+            class="flex-1 bg-[#71974C]/80 hover:bg-[#607848] text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-3 transition">
+            <i class="fa-solid fa-microphone"></i> Browser Mikrofon starten
+          </button>
+          
+          <button onclick="senden()" 
+            class="flex-1 bg-gradient-to-r from-[#607848] to-[#71974C] hover:from-[#485A36] hover:to-[#607848] text-white font-semibold text-xl py-5 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl">
+            <i class="fa-solid fa-paper-plane"></i>
+            Absenden
+          </button>
+        </div>
+
+        <!-- Letzte Transkripte -->
+        <div class="mt-8">
+          <label class="block text-lg mb-2">Letzte Eingaben laden:</label>
+          <select id="history" onchange="loadHistory()" class="w-full bg-white/10 border border-white/30 rounded-xl p-4 text-white focus:outline-none focus:border-[#607848]">
+            <option value="">— keine —</option>
+          </select>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-6 text-center">Datei landet automatisch im SharePoint-Ordner – 100 % automatisch.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const textarea = document.getElementById('text');
+    const wordCount = document.getElementById('wordCount');
+    const historySelect = document.getElementById('history');
+    const templateSelect = document.getElementById('template');
+
+    // Wortzähler live
+    textarea.addEventListener('input', () => {
+      const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+      wordCount.textContent = `${words} Wörter`;
+    });
+
+    // LocalStorage – letzte 5 speichern
+    function saveToHistory() {
+      let history = JSON.parse(localStorage.getItem('transcripts') || '[]');
+      const entry = {
+        text: textarea.value.trim(),
+        template: templateSelect.value,
+        timestamp: new Date().toLocaleString('de-DE')
+      };
+      if (entry.text) {
+        history.unshift(entry);
+        history = history.slice(0, 5);
+        localStorage.setItem('transcripts', JSON.stringify(history));
+        loadHistoryList();
+      }
+    }
+
+    function loadHistoryList() {
+      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
+      historySelect.innerHTML = '<option value="">— keine —</option>';
+      history.forEach((item, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${item.timestamp} – ${item.template} (${item.text.substring(0,40)}${item.text.length > 40 ? '...' : ''})`;
+        historySelect.appendChild(opt);
+      });
+    }
+
+    function loadHistory() {
+      const idx = historySelect.value;
+      if (idx === '') return;
+      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
+      const item = history[idx];
+      if (item) {
+        textarea.value = item.text;
+        templateSelect.value = item.template;
+        wordCount.textContent = `${item.text.trim().split(/\s+/).filter(w => w.length > 0).length} Wörter`;
+      }
+    }
+
+    loadHistoryList(); // beim Laden
+
+    // Browser Speech Recognition (Fallback)
+    let recognition;
+    function startSpeech() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        return alert('Browser Speech Recognition nicht verfügbar (am besten Chrome/Edge nutzen)');
+      }
+
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'de-DE';
+      recognition.interimResults = true;
+      recognition.continuous = true;
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        textarea.value = transcript;
+        const words = transcript.trim().split(/\s+/).filter(w => w.length > 0).length;
+        wordCount.textContent = `${words} Wörter`;
+      };
+
+      recognition.onerror = (event) => console.error(event.error);
+      recognition.start();
+      alert('Mikrofon gestartet – sprich jetzt! (Stop mit erneutem Klick oder schließe Tab)');
+    }
+
+    // Senden mit Confetti
+    async function senden() {
+      const text = textarea.value.trim();
+      if (!text) return alert('Bitte erst Inhalt eingeben oder sprechen!');
+
+      const btn = document.querySelector('button[onclick="senden()"]');
+      const original = btn.innerHTML;
+      btn.innerHTML = 'Wird gesendet... <i class="fa-solid fa-spinner fa-spin"></i>';
+      btn.disabled = true;
+
+      const payload = {
+        transcript: text,
+        template: templateSelect.value  // für n8n unterschiedliche Logik möglich
+      };
+
+      try {
+        await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        // Erfolg: Confetti + Animation
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#607848', '#71974C', '#485A36', '#A8BB5D']
+        });
+
+        alert('✅ Erfolgreich gesendet! Die Word-Datei liegt im SharePoint.');
+        saveToHistory();
+        textarea.value = '';
+        wordCount.textContent = '0 Wörter';
+      } catch (err) {
+        alert('Fehler beim Senden: ' + err.message);
+      }
+
+      btn.innerHTML = original;
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
