@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wispr → MatterFact | scope & solve</title>
+  <title>Initiativenplaner | scope & solve</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -11,7 +11,6 @@
   <style>
     body { font-family: 'Poppins', sans-serif; background: #ffffff; color: #30343B; }
     .primary-green { color: #72974c; }
-    .bg-primary-green { background-color: #72974c; }
     .btn-primary { 
       background-color: #72974c; 
       color: white; 
@@ -36,6 +35,7 @@
     .hero-image { 
       max-width: 100%; 
       height: auto; 
+      object-fit: contain; 
       filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15)); 
       border-radius: 12px;
     }
@@ -50,25 +50,24 @@
         <span class="text-5xl font-bold primary-green leading-none">∞</span>
         <span class="text-2xl font-semibold tracking-tight">scope<span class="primary-green">&amp;</span>solve</span>
       </div>
-      <div class="hidden md:block text-lg font-medium">Wispr → MatterFact Tool</div>
+      <div class="hidden md:block text-lg font-medium">Initiativenplaner</div>
       <a href="#" onclick="window.location.reload()" class="flex items-center gap-2 text-[#72974c] hover:text-[#5f7e3f] transition font-medium">
         <i class="fa-solid fa-rotate"></i> Neu starten
       </a>
     </div>
   </nav>
 
-  <!-- Hero mit deiner SVG -->
+  <!-- Hero -->
   <section class="bg-white min-h-[85vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-16 md:pb-24">
     <div class="container-xl">
       <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <!-- Linke Seite: Text -->
         <div class="space-y-8 md:space-y-10">
           <h1 class="leading-none">
-            Sprich.<br>Strukturiere.<br><span class="primary-green">Speichere.</span>
+            Planen.<br>Strukturieren.<br><span class="primary-green">Umsetzen.</span>
           </h1>
           <p class="text-xl md:text-2xl text-gray-700 max-w-xl leading-relaxed">
-            Wispr Flow oder Browser-Mikrofon direkt in dein MatterFact-Template – 
-            <strong>vollständig automatisiert</strong> in SharePoint abgelegt.
+            Sprich deine Initiative ein – Wispr Flow oder Browser-Mikrofon – 
+            <strong>automatisch</strong> als strukturierte Word-Datei in SharePoint.
           </p>
           <div class="flex flex-col sm:flex-row gap-5 pt-4">
             <a href="#tool" class="btn-primary inline-flex items-center justify-center gap-3">
@@ -80,11 +79,10 @@
           </div>
         </div>
 
-        <!-- Rechte Seite: Deine echte SVG -->
         <div class="flex justify-center md:justify-end">
           <img 
-            src="https://raw.githubusercontent.com/minim-grp/s-s-initiative-transcript/main/Header-graphic-scope-and-solve.svg?sanitize=true" 
-            alt="Scope & Solve MatterFact Illustration" 
+            src="https://raw.githubusercontent.com/minim-grp/s-s-initiative-transcript/main/logo-sands.svg?sanitize=true" 
+            alt="Scope & Solve Illustration" 
             class="hero-image"
           >
         </div>
@@ -92,21 +90,23 @@
     </div>
   </section>
 
-  <!-- Tool-Card Section -->
+  <!-- Tool Card -->
   <section id="tool" class="bg-gray-50 py-16 md:py-24">
     <div class="container-xl max-w-4xl">
       <div class="glass-card p-10 md:p-16">
+        
         <div class="mb-10">
-          <label class="block text-xl font-semibold mb-4 primary-green">Dokument-Typ</label>
-          <select id="template" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/30">
-            <option value="matterfact">MatterFact Standard</option>
-            <option value="other">Anderes Template</option>
+          <label class="block text-xl font-semibold mb-4 primary-green">Initiativen-Typ</label>
+          <select id="template" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c]">
+            <option value="initiative">Standard-Initiative</option>
+            <option value="projekt">Projektplan</option>
+            <option value="massnahme">Maßnahmenliste</option>
           </select>
         </div>
 
         <div class="relative mb-10">
           <textarea id="text" rows="9"
-            class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/30 resize-none shadow-inner"
+            class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] resize-none"
             placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen..."></textarea>
           <div id="wordCount" class="absolute bottom-5 right-6 text-base text-gray-600 font-medium">0 Wörter</div>
         </div>
@@ -122,72 +122,25 @@
           </button>
         </div>
 
-        <div class="mb-8">
-          <label class="block text-xl font-semibold mb-4 primary-green">Letzte Eingaben laden</label>
-          <select id="history" onchange="loadHistory()" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c]">
-            <option value="">— keine —</option>
-          </select>
-        </div>
-
-        <p class="text-center text-gray-600 text-base">Deine fertige Word-Datei landet automatisch im definierten SharePoint-Ordner – sicher & DSGVO-konform.</p>
+        <p class="text-center text-gray-600 text-base">
+          Die fertige Word-Datei wird automatisch in deinen privaten SharePoint-Ordner hochgeladen – nur für dich und berechtigte Personen zugänglich.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- JavaScript (ersetze den Placeholder mit deiner echten n8n-Webhook-URL) -->
   <script>
     const textarea = document.getElementById('text');
     const wordCount = document.getElementById('wordCount');
-    const historySelect = document.getElementById('history');
     const templateSelect = document.getElementById('template');
 
-    // Wortzähler live
+    // Wortzähler
     textarea.addEventListener('input', () => {
       const words = textarea.value.trim().split(/\s+/).filter(w => w).length;
       wordCount.textContent = `${words} Wörter`;
     });
 
-    // History (LocalStorage – max 5)
-    function saveToHistory() {
-      let history = JSON.parse(localStorage.getItem('transcripts') || '[]');
-      const entry = {
-        text: textarea.value.trim(),
-        template: templateSelect.value,
-        timestamp: new Date().toLocaleString('de-DE')
-      };
-      if (entry.text) {
-        history.unshift(entry);
-        history = history.slice(0, 5);
-        localStorage.setItem('transcripts', JSON.stringify(history));
-        loadHistoryList();
-      }
-    }
-
-    function loadHistoryList() {
-      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
-      historySelect.innerHTML = '<option value="">— keine —</option>';
-      history.forEach((item, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = `${item.timestamp} – ${item.template} (${item.text.substring(0,40)}${item.text.length > 40 ? '...' : ''})`;
-        historySelect.appendChild(opt);
-      });
-    }
-
-    function loadHistory() {
-      const idx = historySelect.value;
-      if (idx === '') return;
-      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
-      const item = history[idx];
-      if (item) {
-        textarea.value = item.text;
-        templateSelect.value = item.template;
-        wordCount.textContent = `${item.text.trim().split(/\s+/).filter(w => w).length} Wörter`;
-      }
-    }
-    loadHistoryList();
-
-    // Browser Speech Recognition (Fallback)
+    // Browser Speech
     let recognition;
     function startSpeech() {
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
@@ -203,10 +156,10 @@
         wordCount.textContent = `${transcript.trim().split(/\s+/).filter(w => w).length} Wörter`;
       };
       recognition.start();
-      alert('Mikrofon aktiviert – sprich jetzt! (Stoppe durch Schließen des Tabs oder erneutem Klick)');
+      alert('Mikrofon aktiviert – sprich jetzt!');
     }
 
-    // Senden mit Confetti
+    // Senden
     async function senden() {
       const text = textarea.value.trim();
       if (!text) return alert('Bitte Inhalt eingeben oder sprechen!');
@@ -216,31 +169,19 @@
       btn.innerHTML = 'Sendet... <i class="fa-solid fa-spinner fa-spin"></i>';
       btn.disabled = true;
 
-      const payload = {
-        transcript: text,
-        template: templateSelect.value
-      };
-
       try {
-        await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {  // ← Hier deine echte URL einfügen!
+        await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ transcript: text, template: templateSelect.value })
         });
 
-        confetti({
-          particleCount: 120,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#72974c', '#607848', '#A8BB5D']
-        });
-
-        alert('✅ Erfolgreich gesendet! Die Word-Datei liegt im SharePoint.');
-        saveToHistory();
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 }, colors: ['#72974c', '#607848', '#A8BB5D'] });
+        alert('✅ Erfolgreich gesendet! Die Initiative liegt als Word-Datei in deinem SharePoint.');
         textarea.value = '';
         wordCount.textContent = '0 Wörter';
       } catch (err) {
-        alert('Fehler beim Senden: ' + err.message);
+        alert('Fehler: ' + err.message);
       }
 
       btn.innerHTML = original;
