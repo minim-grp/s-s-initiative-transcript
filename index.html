@@ -9,142 +9,124 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Poppins', sans-serif; background: #ffffff; color: #30343B; }
+    body { font-family: 'Poppins', sans-serif; background: #f8fafc; color: #1e293b; }
     .primary-green { color: #72974c; }
     .btn-primary { 
       background-color: #72974c; 
       color: white; 
       border-radius: 10px; 
-      padding: 14px 32px; 
+      padding: 14px 28px; 
       font-weight: 600; 
       transition: all 0.3s; 
       font-size: 1.125rem;
     }
-    .btn-primary:hover { background-color: #5f7e3f; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(114,151,76,0.25); }
-    .container-xl { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    .btn-primary:hover { background-color: #5f7e3f; transform: translateY(-2px); }
+    .container-xl { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
     .glass-card { 
-      background: rgba(255,255,255,0.97); 
-      backdrop-filter: blur(12px); 
-      border: 1px solid #e9e9e9; 
+      background: white; 
+      border: 1px solid #e2e8f0; 
       border-radius: 16px; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
     }
-    h1 { font-size: 4.5rem; font-weight: 700; line-height: 1.05; }
-    @media (max-width: 1024px) { h1 { font-size: 3.5rem; } }
-    @media (max-width: 768px) { h1 { font-size: 2.8rem; } }
     .hero-image { 
-      max-width: 100%; 
-      height: auto; 
-      object-fit: contain; 
-      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15)); 
-      border-radius: 12px;
+      height: 64px; 
+      width: auto; 
     }
     .hint-box {
       background: #f0fdf4;
       border-left: 4px solid #72974c;
-      padding: 1rem;
+      padding: 1rem 1.25rem;
       border-radius: 0.5rem;
       margin-bottom: 1.5rem;
     }
+    textarea:focus { 
+      outline: none; 
+      border-color: #72974c; 
+      box-shadow: 0 0 0 3px rgba(114,151,76,0.2); 
+    }
   </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-  <!-- Navbar -->
+  <!-- Navbar mit Logo links -->
   <nav class="bg-white shadow-sm fixed w-full z-50 border-b border-gray-100">
-    <div class="container-xl flex items-center justify-between py-5">
+    <div class="container-xl flex items-center justify-between py-4">
       <div class="flex items-center gap-4">
-        <span class="text-5xl font-bold primary-green leading-none">∞</span>
-        <span class="text-2xl font-semibold tracking-tight">scope<span class="primary-green">&amp;</span>solve</span>
+        <img 
+          src="https://raw.githubusercontent.com/minim-grp/s-s-initiative-transcript/main/logo-sands.svg?sanitize=true" 
+          alt="scope & solve" 
+          class="hero-image"
+        >
+        <span class="text-xl font-semibold tracking-tight text-gray-800">Initiativenplaner</span>
       </div>
-      <div class="hidden md:block text-lg font-medium">Initiativenplaner</div>
-      <a href="#" onclick="window.location.reload()" class="flex items-center gap-2 text-[#72974c] hover:text-[#5f7e3f] transition font-medium">
-        <i class="fa-solid fa-rotate"></i> Neu starten
+      <a href="#" onclick="window.location.reload()" class="text-[#72974c] hover:text-[#5f7e3f] transition font-medium flex items-center gap-2">
+        <i class="fa-solid fa-rotate"></i> Neu laden
       </a>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="bg-white min-h-[85vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-16 md:pb-24">
-    <div class="container-xl">
-      <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <div class="space-y-8 md:space-y-10">
-          <h1 class="leading-none">
-            Initiative anstoßen.<br>
-            Struktur schaffen.<br>
-            <span class="primary-green">Erfolgreich umsetzen.</span>
+  <!-- Hauptbereich – direkt das Eingabefeld -->
+  <main class="pt-24 pb-16">
+    <div class="container-xl max-w-5xl">
+      <div class="glass-card p-8 md:p-12">
+        
+        <!-- Header + wichtiger Hinweis -->
+        <div class="text-center mb-10">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+            Deine Initiative einsprechen
           </h1>
-          <p class="text-xl md:text-2xl text-gray-700 max-w-xl leading-relaxed">
-            Sprich deine Initiative einfach ein – mit Wispr Flow oder Browser-Mikrofon –<br>
-            automatisch als strukturierte Word-Datei in SharePoint.
+          <p class="text-xl text-gray-600 mb-6">
+            Einfach sprechen – automatisch als strukturierte Word-Datei in SharePoint
           </p>
-          <div class="flex flex-col sm:flex-row gap-5 pt-4">
-            <a href="#tool" class="btn-primary inline-flex items-center justify-center gap-3">
-              <i class="fa-solid fa-microphone"></i> Jetzt starten
-            </a>
-            <a href="#" class="text-[#72974c] font-medium hover:underline flex items-center gap-2">
-              Mehr erfahren <i class="fa-solid fa-arrow-right"></i>
-            </a>
+
+          <div class="hint-box max-w-3xl mx-auto text-left">
+            <strong>Wichtig – so funktioniert es richtig:</strong><br>
+            Beginne deine Spracheingabe <strong>immer zuerst</strong> mit dem Kunden- oder Projektnamen.<br>
+            <strong>Beispiel:</strong> „Kunde Müller – Neubau 2026. Die geplante Initiative umfasst...“<br>
+            <span class="text-sm text-gray-600 mt-1 block">
+              n8n erkennt den Kunden automatisch aus dem Anfang des Transkripts und speichert die Datei im passenden Ordner.
+            </span>
           </div>
         </div>
 
-        <div class="flex justify-center md:justify-end">
-          <img 
-            src="https://raw.githubusercontent.com/minim-grp/s-s-initiative-transcript/main/logo-sands.svg?sanitize=true" 
-            alt="Scope & Solve Illustration" 
-            class="hero-image"
-          >
-        </div>
-      </div>
-    </div>
-  </section>
+        <!-- Eingabefeld + Buttons links -->
+        <div class="grid md:grid-cols-[auto,1fr] gap-6">
+          <!-- Links: Buttons -->
+          <div class="flex flex-col gap-4 justify-start">
+            <button onclick="startSpeech()" 
+              class="btn-primary flex items-center justify-center gap-3 text-lg py-5 px-8">
+              <i class="fa-solid fa-microphone text-2xl"></i>
+              Mikrofon starten
+            </button>
+            <button onclick="senden()" 
+              class="btn-primary flex items-center justify-center gap-3 text-lg py-5 px-8">
+              <i class="fa-solid fa-paper-plane text-xl"></i>
+              Absenden & Speichern
+            </button>
+          </div>
 
-  <!-- Tool Card -->
-  <section id="tool" class="bg-gray-50 py-16 md:py-24">
-    <div class="container-xl max-w-4xl">
-      <div class="glass-card p-10 md:p-16">
-        
-        <!-- Klarer, prominenter Hinweis -->
-        <div class="hint-box mb-10">
-          <strong>Wichtig – so funktioniert es richtig:</strong><br>
-          Beginne deine Spracheingabe <strong>immer zuerst</strong> mit dem Kunden- oder Projektnamen.<br>
-          Beispiel: „Kunde Müller – Neubau 2026. Wir planen folgende Maßnahmen...“<br>
-          <span class="text-sm text-gray-600 mt-1 block">
-            n8n erkennt den Kunden automatisch aus dem Transkript und speichert die Datei im passenden Ordner.
-          </span>
-        </div>
-
-        <div class="relative mb-10">
-          <textarea id="text" rows="10"
-            class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] resize-none"
-            placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen...&#10;&#10;Wichtig: Beginne IMMER mit dem Kunden-/Projektnamen!&#10;z. B. 'Kunde Müller – Neubau 2026. Die geplante Initiative umfasst...'"></textarea>
-          <div id="wordCount" class="absolute bottom-5 right-6 text-base text-gray-600 font-medium">0 Wörter</div>
+          <!-- Rechts: großes Textfeld -->
+          <div class="relative">
+            <textarea id="text" rows="12"
+              class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none resize-none shadow-inner"
+              placeholder="Klicke hier oder starte das Mikrofon...&#10;&#10;WICHTIG: Beginne IMMER mit dem Kunden-/Projektnamen!&#10;z. B. 'Kunde Müller – Neubau 2026. Die geplante Initiative umfasst...'"></textarea>
+            <div id="wordCount" class="absolute bottom-5 right-6 text-base text-gray-600 font-medium">0 Wörter</div>
+          </div>
         </div>
 
-        <div class="grid sm:grid-cols-2 gap-6 mb-12">
-          <button onclick="startSpeech()" 
-            class="btn-primary flex items-center justify-center gap-4 text-xl">
-            <i class="fa-solid fa-microphone text-2xl"></i> Browser-Mikrofon starten
-          </button>
-          <button onclick="senden()" 
-            class="btn-primary flex items-center justify-center gap-4 text-xl">
-            <i class="fa-solid fa-paper-plane text-2xl"></i> Absenden & Speichern
-          </button>
-        </div>
-
-        <p class="text-center text-gray-600 text-base">
+        <p class="text-center text-gray-600 mt-8 text-base">
           Die fertige Word-Datei wird automatisch in deinem SharePoint-Ordner gespeichert – 
-          n8n erkennt den Kunden aus dem Anfang des Transkripts.
+          n8n erkennt den Kunden aus dem Anfang deines Transkripts.
         </p>
       </div>
     </div>
-  </section>
+  </main>
 
   <script>
     const textarea = document.getElementById('text');
     const wordCount = document.getElementById('wordCount');
 
-    // Wortzähler
+    // Wortzähler live
     textarea.addEventListener('input', () => {
       const words = textarea.value.trim().split(/\s+/).filter(w => w).length;
       wordCount.textContent = `${words} Wörter`;
@@ -169,7 +151,7 @@
       alert('Mikrofon aktiviert – sprich jetzt!');
     }
 
-    // Senden – ohne extra Felder
+    // Senden
     async function senden() {
       const text = textarea.value.trim();
 
@@ -178,8 +160,8 @@
         return;
       }
 
-      // Optional: Prüfen, ob überhaupt ein Kunde genannt wurde (kann später entfernt werden)
-      if (!text.match(/(Kunde|Projekt|Kundin|Kunden)/i)) {
+      // Optional: Warnung, wenn kein Kunde erkennbar ist
+      if (!text.match(/(Kunde|Projekt|Kundin|Firma)/i)) {
         if (!confirm('Du hast keinen Kunden oder Projektnamen genannt. Trotzdem senden?')) {
           return;
         }
@@ -194,10 +176,7 @@
         await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            transcript: text
-            // Kein template mehr – nur ein Typ
-          })
+          body: JSON.stringify({ transcript: text })
         });
 
         confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 }, colors: ['#72974c', '#607848', '#A8BB5D'] });
