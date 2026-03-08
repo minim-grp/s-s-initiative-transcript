@@ -39,7 +39,13 @@
       filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15)); 
       border-radius: 12px;
     }
-    .error { color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: none; }
+    .hint-box {
+      background: #f0fdf4;
+      border-left: 4px solid #72974c;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
   </style>
 </head>
 <body>
@@ -98,38 +104,20 @@
     <div class="container-xl max-w-4xl">
       <div class="glass-card p-10 md:p-16">
         
-        <!-- Kunde / Projektname – mit klarem Hinweis -->
-        <div class="mb-10">
-          <label class="block text-xl font-semibold mb-2 primary-green">
-            Kunde / Projektname <span class="text-red-600">*</span>
-          </label>
-          <p class="text-base text-gray-600 mb-3 leading-relaxed">
-            <strong>Wichtig:</strong> Nenne bitte <strong>am Anfang</strong> immer den Kunden- oder Projektnamen (z. B. „Kunde XY – Neubau 2026“ oder „Projekt ABC“).  
-            Nur so wird die fertige Datei automatisch im richtigen SharePoint-Ordner gespeichert.
-          </p>
-          <input 
-            type="text" 
-            id="project" 
-            class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c]"
-            placeholder="z. B. Kunde XY – Neubau 2026 oder Projekt ABC"
-            required
-          >
-          <div id="projectError" class="error">Bitte geben Sie den Kunden- oder Projektnamen ein.</div>
-        </div>
-
-        <div class="mb-10">
-          <label class="block text-xl font-semibold mb-4 primary-green">Initiativen-Typ</label>
-          <select id="template" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c]">
-            <option value="initiative">Standard-Initiative</option>
-            <option value="projekt">Projektplan</option>
-            <option value="massnahme">Maßnahmenliste</option>
-          </select>
+        <!-- Klarer, prominenter Hinweis -->
+        <div class="hint-box mb-10">
+          <strong>Wichtig – so funktioniert es richtig:</strong><br>
+          Beginne deine Spracheingabe <strong>immer zuerst</strong> mit dem Kunden- oder Projektnamen.<br>
+          Beispiel: „Kunde Müller – Neubau 2026. Wir planen folgende Maßnahmen...“<br>
+          <span class="text-sm text-gray-600 mt-1 block">
+            n8n erkennt den Kunden automatisch aus dem Transkript und speichert die Datei im passenden Ordner.
+          </span>
         </div>
 
         <div class="relative mb-10">
-          <textarea id="text" rows="9"
+          <textarea id="text" rows="10"
             class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] resize-none"
-            placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen...&#10;&#10;Tipp: Beginne mit dem Kunden-/Projektnamen (z. B. 'Kunde XY – Neubau 2026...')"></textarea>
+            placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen...&#10;&#10;Wichtig: Beginne IMMER mit dem Kunden-/Projektnamen!&#10;z. B. 'Kunde Müller – Neubau 2026. Die geplante Initiative umfasst...'"></textarea>
           <div id="wordCount" class="absolute bottom-5 right-6 text-base text-gray-600 font-medium">0 Wörter</div>
         </div>
 
@@ -146,18 +134,15 @@
 
         <p class="text-center text-gray-600 text-base">
           Die fertige Word-Datei wird automatisch in deinem SharePoint-Ordner gespeichert – 
-          passend zum angegebenen Kunden-/Projektnamen.
+          n8n erkennt den Kunden aus dem Anfang des Transkripts.
         </p>
       </div>
     </div>
   </section>
 
   <script>
-    const projectInput = document.getElementById('project');
     const textarea = document.getElementById('text');
     const wordCount = document.getElementById('wordCount');
-    const templateSelect = document.getElementById('template');
-    const projectError = document.getElementById('projectError');
 
     // Wortzähler
     textarea.addEventListener('input', () => {
@@ -165,7 +150,7 @@
       wordCount.textContent = `${words} Wörter`;
     });
 
-    // Browser Speech
+    // Browser Speech Recognition
     let recognition;
     function startSpeech() {
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
@@ -184,25 +169,20 @@
       alert('Mikrofon aktiviert – sprich jetzt!');
     }
 
-    // Senden mit Prüfung
+    // Senden – ohne extra Felder
     async function senden() {
-      const project = projectInput.value.trim();
       const text = textarea.value.trim();
-
-      // Validierung: Projektname muss angegeben sein
-      if (!project) {
-        projectError.style.display = 'block';
-        projectInput.focus();
-        projectInput.classList.add('border-red-500');
-        return;
-      } else {
-        projectError.style.display = 'none';
-        projectInput.classList.remove('border-red-500');
-      }
 
       if (!text) {
         alert('Bitte Inhalt eingeben oder sprechen!');
         return;
+      }
+
+      // Optional: Prüfen, ob überhaupt ein Kunde genannt wurde (kann später entfernt werden)
+      if (!text.match(/(Kunde|Projekt|Kundin|Kunden)/i)) {
+        if (!confirm('Du hast keinen Kunden oder Projektnamen genannt. Trotzdem senden?')) {
+          return;
+        }
       }
 
       const btn = document.querySelector('button[onclick="senden()"]');
@@ -215,14 +195,13 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            project: project,           // für n8n → dynamischer Ordner
-            transcript: text,
-            template: templateSelect.value 
+            transcript: text
+            // Kein template mehr – nur ein Typ
           })
         });
 
         confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 }, colors: ['#72974c', '#607848', '#A8BB5D'] });
-        alert(`✅ Erfolgreich gesendet!\n\nProjekt: ${project}\nDie Datei liegt jetzt im passenden SharePoint-Ordner.`);
+        alert('✅ Erfolgreich gesendet! Die Initiative wird als Word-Datei in SharePoint abgelegt.');
         
         textarea.value = '';
         wordCount.textContent = '0 Wörter';
