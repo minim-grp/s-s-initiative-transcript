@@ -12,7 +12,6 @@
     body { font-family: 'Poppins', sans-serif; background: #ffffff; color: #30343B; }
     .primary-green { color: #72974c; }
     .bg-primary-green { background-color: #72974c; }
-    .hover\:bg-primary-green:hover { background-color: #72974c; }
     .btn-primary { 
       background-color: #72974c; 
       color: white; 
@@ -24,7 +23,6 @@
     }
     .btn-primary:hover { background-color: #5f7e3f; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(114,151,76,0.25); }
     .container-xl { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-    .hero-bg { background: #ffffff; }
     .glass-card { 
       background: rgba(255,255,255,0.97); 
       backdrop-filter: blur(12px); 
@@ -35,6 +33,12 @@
     h1 { font-size: 4.5rem; font-weight: 700; line-height: 1.05; }
     @media (max-width: 1024px) { h1 { font-size: 3.5rem; } }
     @media (max-width: 768px) { h1 { font-size: 2.8rem; } }
+    .hero-image { 
+      max-width: 100%; 
+      height: auto; 
+      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15)); 
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
@@ -53,8 +57,8 @@
     </div>
   </nav>
 
-  <!-- Hero – jetzt groß & ausbalanciert -->
-  <section class="hero-bg min-h-[85vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-16 md:pb-24">
+  <!-- Hero mit deiner SVG -->
+  <section class="bg-white min-h-[85vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-16 md:pb-24">
     <div class="container-xl">
       <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
         <!-- Linke Seite: Text -->
@@ -76,24 +80,22 @@
           </div>
         </div>
 
-        <!-- Rechte Seite: Große Grafik (ersetze durch echte SVG!) -->
+        <!-- Rechte Seite: Deine echte SVG -->
         <div class="flex justify-center md:justify-end">
           <img 
-            src="https://via.placeholder.com/700x550/72974c/ffffff?text=MatterFact+Prozess+Illustration+scope+%26+solve" 
-            alt="MatterFact Illustration" 
-            class="max-w-full rounded-2xl shadow-2xl object-contain"
+            src="https://raw.githubusercontent.com/minim-grp/s-s-initiative-transcript/main/Header-graphic-scope-and-solve.svg?sanitize=true" 
+            alt="Scope & Solve MatterFact Illustration" 
+            class="hero-image"
           >
-          <!-- Tipp: Lade die echte Header-Grafik von scopeandsolve.com hoch und nutze: src="https://dein-host/Header-graphic-scope-and-solve.svg" -->
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Tool-Card Section (scrollbar unten) -->
+  <!-- Tool-Card Section -->
   <section id="tool" class="bg-gray-50 py-16 md:py-24">
     <div class="container-xl max-w-4xl">
       <div class="glass-card p-10 md:p-16">
-        <!-- Inhalt wie zuvor -->
         <div class="mb-10">
           <label class="block text-xl font-semibold mb-4 primary-green">Dokument-Typ</label>
           <select id="template" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/30">
@@ -132,10 +134,118 @@
     </div>
   </section>
 
-  <!-- Rest des Scripts bleibt gleich wie in der vorherigen Version -->
+  <!-- JavaScript (ersetze den Placeholder mit deiner echten n8n-Webhook-URL) -->
   <script>
-    // ... (kopiere den gesamten <script>-Block aus deiner vorherigen Version hierher – Wortzähler, History, Speech, senden() mit Confetti)
-    // Ersetze nur '=== DEINE_N8N_WEBHOOK_URL ===' durch deine echte URL
+    const textarea = document.getElementById('text');
+    const wordCount = document.getElementById('wordCount');
+    const historySelect = document.getElementById('history');
+    const templateSelect = document.getElementById('template');
+
+    // Wortzähler live
+    textarea.addEventListener('input', () => {
+      const words = textarea.value.trim().split(/\s+/).filter(w => w).length;
+      wordCount.textContent = `${words} Wörter`;
+    });
+
+    // History (LocalStorage – max 5)
+    function saveToHistory() {
+      let history = JSON.parse(localStorage.getItem('transcripts') || '[]');
+      const entry = {
+        text: textarea.value.trim(),
+        template: templateSelect.value,
+        timestamp: new Date().toLocaleString('de-DE')
+      };
+      if (entry.text) {
+        history.unshift(entry);
+        history = history.slice(0, 5);
+        localStorage.setItem('transcripts', JSON.stringify(history));
+        loadHistoryList();
+      }
+    }
+
+    function loadHistoryList() {
+      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
+      historySelect.innerHTML = '<option value="">— keine —</option>';
+      history.forEach((item, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${item.timestamp} – ${item.template} (${item.text.substring(0,40)}${item.text.length > 40 ? '...' : ''})`;
+        historySelect.appendChild(opt);
+      });
+    }
+
+    function loadHistory() {
+      const idx = historySelect.value;
+      if (idx === '') return;
+      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
+      const item = history[idx];
+      if (item) {
+        textarea.value = item.text;
+        templateSelect.value = item.template;
+        wordCount.textContent = `${item.text.trim().split(/\s+/).filter(w => w).length} Wörter`;
+      }
+    }
+    loadHistoryList();
+
+    // Browser Speech Recognition (Fallback)
+    let recognition;
+    function startSpeech() {
+      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+        return alert('Spracherkennung nicht verfügbar – nutze Wispr Flow oder Chrome/Edge.');
+      }
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'de-DE';
+      recognition.interimResults = true;
+      recognition.continuous = true;
+      recognition.onresult = e => {
+        let transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+        textarea.value = transcript;
+        wordCount.textContent = `${transcript.trim().split(/\s+/).filter(w => w).length} Wörter`;
+      };
+      recognition.start();
+      alert('Mikrofon aktiviert – sprich jetzt! (Stoppe durch Schließen des Tabs oder erneutem Klick)');
+    }
+
+    // Senden mit Confetti
+    async function senden() {
+      const text = textarea.value.trim();
+      if (!text) return alert('Bitte Inhalt eingeben oder sprechen!');
+
+      const btn = document.querySelector('button[onclick="senden()"]');
+      const original = btn.innerHTML;
+      btn.innerHTML = 'Sendet... <i class="fa-solid fa-spinner fa-spin"></i>';
+      btn.disabled = true;
+
+      const payload = {
+        transcript: text,
+        template: templateSelect.value
+      };
+
+      try {
+        await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {  // ← Hier deine echte URL einfügen!
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#72974c', '#607848', '#A8BB5D']
+        });
+
+        alert('✅ Erfolgreich gesendet! Die Word-Datei liegt im SharePoint.');
+        saveToHistory();
+        textarea.value = '';
+        wordCount.textContent = '0 Wörter';
+      } catch (err) {
+        alert('Fehler beim Senden: ' + err.message);
+      }
+
+      btn.innerHTML = original;
+      btn.disabled = false;
+    }
   </script>
 </body>
 </html>
