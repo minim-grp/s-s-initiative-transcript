@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 const AUTH_COOKIE_NAME = 'initiativen_auth'
-const PASSWORD = 'dein_geheimes_passwort_2026' // ← ÄNDERE DAS HIER! (mind. 12 Zeichen, komplex)
+const PASSWORD = 'y1$Qi!bDVRc1*NBp' // ← ÄNDERE DAS HIER! (mind. 12 Zeichen, komplex)
 
 export function middleware(request) {
   const url = request.nextUrl
