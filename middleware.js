@@ -1,6 +1,6 @@
 // middleware.js
 const AUTH_COOKIE_NAME = 'initiativen_auth'
-const PASSWORD = 'y1$Qi!bDVRc1*NBp' 
+const PASSWORD = '3E%89B!yKL6n@CQd' 
 
 export default async function middleware(request) {
   const url = new URL(request.url)
