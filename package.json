@@ -2,5 +2,7 @@
   "name": "s-s-initiative-transcript",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {}
+  "scripts": {
+    "build": "mkdir -p .vercel/output/static && cp index.html .vercel/output/static/"
+  }
 }
