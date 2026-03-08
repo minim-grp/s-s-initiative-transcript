@@ -11,6 +11,7 @@
   <style>
     body { font-family: 'Poppins', sans-serif; background: #ffffff; color: #30343B; }
     .primary-green { color: #72974c; }
+    .bg-primary-green { background-color: #72974c; }
     .btn-primary { 
       background-color: #72974c; 
       color: white; 
@@ -39,6 +40,7 @@
       filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15)); 
       border-radius: 12px;
     }
+    .error { color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: none; }
   </style>
 </head>
 <body>
@@ -95,6 +97,19 @@
     <div class="container-xl max-w-4xl">
       <div class="glass-card p-10 md:p-16">
         
+        <!-- NEU: Kunde / Projektname – Pflichtfeld ganz oben -->
+        <div class="mb-10">
+          <label class="block text-xl font-semibold mb-4 primary-green">Kunde / Projektname <span class="text-red-600">*</span></label>
+          <input 
+            type="text" 
+            id="project" 
+            class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c]"
+            placeholder="z. B. Kunde XY – Neubau 2026 oder Projekt ABC"
+            required
+          >
+          <div id="projectError" class="error">Bitte geben Sie den Kunden- oder Projektnamen ein (wird für den Speicherort benötigt).</div>
+        </div>
+
         <div class="mb-10">
           <label class="block text-xl font-semibold mb-4 primary-green">Initiativen-Typ</label>
           <select id="template" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c]">
@@ -107,7 +122,7 @@
         <div class="relative mb-10">
           <textarea id="text" rows="9"
             class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] resize-none"
-            placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen..."></textarea>
+            placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen...&#10;&#10;Tipp: Beginne mit 'Kunde XY – Projekt ABC...' damit die Datei im richtigen Ordner gespeichert wird."></textarea>
           <div id="wordCount" class="absolute bottom-5 right-6 text-base text-gray-600 font-medium">0 Wörter</div>
         </div>
 
@@ -123,16 +138,19 @@
         </div>
 
         <p class="text-center text-gray-600 text-base">
-          Die fertige Word-Datei wird automatisch in deinen privaten SharePoint-Ordner hochgeladen – nur für dich und berechtigte Personen zugänglich.
+          Die fertige Word-Datei wird automatisch in deinem SharePoint-Ordner gespeichert – 
+          passend zum angegebenen Kunden-/Projektnamen.
         </p>
       </div>
     </div>
   </section>
 
   <script>
+    const projectInput = document.getElementById('project');
     const textarea = document.getElementById('text');
     const wordCount = document.getElementById('wordCount');
     const templateSelect = document.getElementById('template');
+    const projectError = document.getElementById('projectError');
 
     // Wortzähler
     textarea.addEventListener('input', () => {
@@ -159,10 +177,26 @@
       alert('Mikrofon aktiviert – sprich jetzt!');
     }
 
-    // Senden
+    // Senden mit Prüfung
     async function senden() {
+      const project = projectInput.value.trim();
       const text = textarea.value.trim();
-      if (!text) return alert('Bitte Inhalt eingeben oder sprechen!');
+
+      // Validierung: Kunde/Projekt muss angegeben sein
+      if (!project) {
+        projectError.style.display = 'block';
+        projectInput.focus();
+        projectInput.classList.add('border-red-500');
+        return;
+      } else {
+        projectError.style.display = 'none';
+        projectInput.classList.remove('border-red-500');
+      }
+
+      if (!text) {
+        alert('Bitte Inhalt eingeben oder sprechen!');
+        return;
+      }
 
       const btn = document.querySelector('button[onclick="senden()"]');
       const original = btn.innerHTML;
@@ -173,15 +207,20 @@
         await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transcript: text, template: templateSelect.value })
+          body: JSON.stringify({ 
+            project: project,           // ← das neue Feld für n8n
+            transcript: text,
+            template: templateSelect.value 
+          })
         });
 
         confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 }, colors: ['#72974c', '#607848', '#A8BB5D'] });
-        alert('✅ Erfolgreich gesendet! Die Initiative liegt als Word-Datei in deinem SharePoint.');
+        alert(`✅ Erfolgreich gesendet!\n\nProjekt: ${project}\nDie Datei liegt jetzt im passenden SharePoint-Ordner.`);
+        
         textarea.value = '';
         wordCount.textContent = '0 Wörter';
       } catch (err) {
-        alert('Fehler: ' + err.message);
+        alert('Fehler beim Senden: ' + err.message);
       }
 
       btn.innerHTML = original;
