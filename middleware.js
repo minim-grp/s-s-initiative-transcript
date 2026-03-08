@@ -1,94 +1,77 @@
 // middleware.js
 const AUTH_COOKIE_NAME = 'initiativen_auth'
-const PASSWORD = '3E%89B!yKL6n@CQd' 
+const PASSWORD = 'y1$Qi!bDVRc1*NBp' // Dein Passwort
 
 export default async function middleware(request) {
   const url = new URL(request.url)
   const cookieHeader = request.headers.get('cookie') || ''
-  
-  // Einfacher Check, ob der Cookie existiert
   const hasAuth = cookieHeader.includes(`${AUTH_COOKIE_NAME}=${PASSWORD}`)
 
-  // 1. Wenn authentifiziert -> Weiterleitung zur angeforderten Ressource
-  if (hasAuth) {
-    return // undefined bedeutet: Anfrage einfach durchlaufen lassen
+  // 1. Erlaube Zugriff auf statische Assets (Logo, Favicon)
+  if (url.pathname.includes('.') && !url.pathname.endsWith('.html')) {
+    return
   }
 
-  // 2. Login-Logik (POST-Request an /auth)
-  if (url.pathname === '/auth' && request.method === 'POST') {
+  // 2. Login-Logik: Wenn das Passwort gesendet wird
+  if (request.method === 'POST') {
     try {
       const formData = await request.formData()
       const enteredPassword = formData.get('password')
 
       if (enteredPassword === PASSWORD) {
-        // Erfolg: Umleiten auf Home + Cookie setzen
-        const response = new Response(null, {
-          status: 307,
-          headers: { 'Location': '/' }
-        })
+        const response = new Response(null, { status: 307, headers: { 'Location': '/' } })
         response.headers.append('Set-Cookie', `${AUTH_COOKIE_NAME}=${PASSWORD}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`)
         return response
+      } else {
+        return new Response(getLoginHtml(true), { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
       }
-    } catch (e) {
-      // Fehler beim Parsen von Form-Data
-    }
-    
-    // Falsches Passwort
-    return new Response(getLoginHtml(true), {
-      status: 401,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    } catch (e) {}
   }
 
-  // 3. Login-Seite anzeigen (GET auf /auth)
-  if (url.pathname === '/auth') {
+  // 3. Wenn nicht eingeloggt -> Zeige Login-Formular (statt 404)
+  if (!hasAuth) {
     return new Response(getLoginHtml(false), {
-      status: 200,
       headers: { 'Content-Type': 'text/html; charset=utf-8' }
     })
   }
 
-  // 4. Alle anderen Seiten -> Umleiten zu /auth (außer statische Assets)
-  const excludedPaths = ['/favicon.ico', '/logo-sands.svg']
-  if (!excludedPaths.includes(url.pathname)) {
-    return new Response(null, {
-      status: 307,
-      headers: { 'Location': '/auth' }
-    })
-  }
+  // 4. Wenn eingeloggt -> Vercel zeigt automatisch die index.html
+  return
 }
 
-// Hilfsfunktion für das HTML (sauberer getrennt)
 function getLoginHtml(isError) {
   return `
-    <html>
-      <head>
-        <title>Initiativenplaner Login</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f8fafc; }
-          .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 350px; }
-          input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-          button { width: 100%; padding: 12px; background: #72974c; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-          .error { color: #dc2626; font-size: 14px; margin-top: 10px; }
-        </style>
-      </head>
-      <body>
-        <div class="card">
-          <h2>Zugriff geschützt</h2>
-          <p>Bitte Passwort eingeben</p>
-          <form method="POST" action="/auth">
-            <input type="password" name="password" placeholder="Passwort" required autofocus>
-            <button type="submit">Login</button>
-          </form>
-          ${isError ? '<p class="error">Falsches Passwort – bitte erneut versuchen.</p>' : ''}
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Login | Initiativenplaner</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+      <style>body { font-family: 'Poppins', sans-serif; }</style>
+    </head>
+    <body class="bg-slate-50 flex items-center justify-center min-h-screen p-4">
+      <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold text-gray-800">Zugriff geschützt</h2>
+          <p class="text-gray-500 mt-2">Bitte gib das Passwort ein, um den Initiativenplaner zu nutzen.</p>
         </div>
-      </body>
+        <form method="POST">
+          <input type="password" name="password" placeholder="Passwort eingeben" required autofocus
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/20 outline-none transition-all mb-4">
+          <button type="submit" 
+            class="w-full bg-[#72974c] hover:bg-[#5f7e3f] text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-[#72974c]/20">
+            Anmelden
+          </button>
+        </form>
+        ${isError ? '<p class="text-red-500 text-center mt-4 text-sm font-medium">❌ Falsches Passwort</p>' : ''}
+      </div>
+    </body>
     </html>
   `
 }
 
-// WICHTIG für Vercel (Matcher)
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+  matcher: ['/', '/index.html']
 }
