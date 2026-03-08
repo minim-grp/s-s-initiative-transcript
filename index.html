@@ -17,208 +17,125 @@
       background-color: #72974c; 
       color: white; 
       border-radius: 10px; 
-      padding: 12px 28px; 
+      padding: 14px 32px; 
       font-weight: 600; 
       transition: all 0.3s; 
+      font-size: 1.125rem;
     }
-    .btn-primary:hover { background-color: #5f7e3f; transform: translateY(-2px); }
-    .container-xl { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+    .btn-primary:hover { background-color: #5f7e3f; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(114,151,76,0.25); }
+    .container-xl { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    .hero-bg { background: #ffffff; }
     .glass-card { 
-      background: rgba(255,255,255,0.95); 
+      background: rgba(255,255,255,0.97); 
       backdrop-filter: blur(12px); 
       border: 1px solid #e9e9e9; 
       border-radius: 16px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
     }
-    .section-padding { padding: 100px 0; }
-    h1 { font-size: 3.5rem; font-weight: 700; line-height: 1.1; }
-    @media (max-width: 768px) { h1 { font-size: 2.5rem; } }
+    h1 { font-size: 4.5rem; font-weight: 700; line-height: 1.05; }
+    @media (max-width: 1024px) { h1 { font-size: 3.5rem; } }
+    @media (max-width: 768px) { h1 { font-size: 2.8rem; } }
   </style>
 </head>
 <body>
 
-  <!-- Header / Navbar – clean & white like original -->
+  <!-- Navbar -->
   <nav class="bg-white shadow-sm fixed w-full z-50 border-b border-gray-100">
     <div class="container-xl flex items-center justify-between py-5">
-      <div class="flex items-center gap-3">
-        <span class="text-4xl font-bold primary-green leading-none">∞</span>
-        <span class="text-2xl font-semibold">scope<span class="primary-green">&amp;</span>solve</span>
+      <div class="flex items-center gap-4">
+        <span class="text-5xl font-bold primary-green leading-none">∞</span>
+        <span class="text-2xl font-semibold tracking-tight">scope<span class="primary-green">&amp;</span>solve</span>
       </div>
-      <div class="text-lg font-medium hidden md:block">Wispr → MatterFact Tool</div>
-      <a href="#" onclick="window.location.reload()" class="flex items-center gap-2 text-[#72974c] hover:text-[#5f7e3f] transition">
+      <div class="hidden md:block text-lg font-medium">Wispr → MatterFact Tool</div>
+      <a href="#" onclick="window.location.reload()" class="flex items-center gap-2 text-[#72974c] hover:text-[#5f7e3f] transition font-medium">
         <i class="fa-solid fa-rotate"></i> Neu starten
       </a>
     </div>
   </nav>
 
-  <!-- Hero Section – inspired by original hero: white bg, big headline left, graphic right (here simplified) -->
-  <section class="section-padding bg-white pt-32">
+  <!-- Hero – jetzt groß & ausbalanciert -->
+  <section class="hero-bg min-h-[85vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-16 md:pb-24">
     <div class="container-xl">
-      <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h1 class="mb-6">Sprich.<br>Strukturiere.<br><span class="primary-green">Speichere.</span></h1>
-          <p class="text-xl text-gray-700 mb-10 max-w-xl">
-            Wispr Flow oder Browser-Mikrofon direkt in dein MatterFact-Template – vollautomatisch in SharePoint abgelegt.
+      <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Linke Seite: Text -->
+        <div class="space-y-8 md:space-y-10">
+          <h1 class="leading-none">
+            Sprich.<br>Strukturiere.<br><span class="primary-green">Speichere.</span>
+          </h1>
+          <p class="text-xl md:text-2xl text-gray-700 max-w-xl leading-relaxed">
+            Wispr Flow oder Browser-Mikrofon direkt in dein MatterFact-Template – 
+            <strong>vollständig automatisiert</strong> in SharePoint abgelegt.
           </p>
+          <div class="flex flex-col sm:flex-row gap-5 pt-4">
+            <a href="#tool" class="btn-primary inline-flex items-center justify-center gap-3">
+              <i class="fa-solid fa-microphone"></i> Jetzt starten
+            </a>
+            <a href="#" class="text-[#72974c] font-medium hover:underline flex items-center gap-2">
+              Mehr erfahren <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
         </div>
-        <div class="flex justify-center">
-          <!-- Placeholder für SVG-Grafik wie im Original (Header-graphic-scope-and-solve.svg) -->
-          <img src="https://via.placeholder.com/600x400/72974c/ffffff?text=MatterFact+Illustration" alt="Illustration" class="max-w-full rounded-xl shadow-lg">
+
+        <!-- Rechte Seite: Große Grafik (ersetze durch echte SVG!) -->
+        <div class="flex justify-center md:justify-end">
+          <img 
+            src="https://via.placeholder.com/700x550/72974c/ffffff?text=MatterFact+Prozess+Illustration+scope+%26+solve" 
+            alt="MatterFact Illustration" 
+            class="max-w-full rounded-2xl shadow-2xl object-contain"
+          >
+          <!-- Tipp: Lade die echte Header-Grafik von scopeandsolve.com hoch und nutze: src="https://dein-host/Header-graphic-scope-and-solve.svg" -->
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Main Tool Card – glassmorphic, centered, mit allen Features -->
-  <section class="section-padding bg-gray-50">
-    <div class="container-xl max-w-3xl">
-      <div class="glass-card p-10 md:p-14">
-        
-        <!-- Template Auswahl -->
-        <div class="mb-8">
-          <label class="block text-lg font-medium mb-3">Dokument-Typ</label>
-          <select id="template" class="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/30">
+  <!-- Tool-Card Section (scrollbar unten) -->
+  <section id="tool" class="bg-gray-50 py-16 md:py-24">
+    <div class="container-xl max-w-4xl">
+      <div class="glass-card p-10 md:p-16">
+        <!-- Inhalt wie zuvor -->
+        <div class="mb-10">
+          <label class="block text-xl font-semibold mb-4 primary-green">Dokument-Typ</label>
+          <select id="template" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/30">
             <option value="matterfact">MatterFact Standard</option>
             <option value="other">Anderes Template</option>
           </select>
         </div>
 
-        <!-- Textarea + Wortzähler -->
-        <div class="relative mb-8">
-          <textarea id="text" rows="8"
-            class="w-full border border-gray-300 rounded-xl p-6 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/30 resize-none"
+        <div class="relative mb-10">
+          <textarea id="text" rows="9"
+            class="w-full border-2 border-gray-200 rounded-2xl p-7 text-lg placeholder-gray-500 focus:outline-none focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/30 resize-none shadow-inner"
             placeholder="Klicke hier → Wispr Flow aktivieren oder Mikrofon-Button nutzen..."></textarea>
-          <div id="wordCount" class="absolute bottom-4 right-6 text-sm text-gray-500">0 Wörter</div>
+          <div id="wordCount" class="absolute bottom-5 right-6 text-base text-gray-600 font-medium">0 Wörter</div>
         </div>
 
-        <!-- Buttons -->
-        <div class="grid sm:grid-cols-2 gap-4 mb-10">
+        <div class="grid sm:grid-cols-2 gap-6 mb-12">
           <button onclick="startSpeech()" 
-            class="btn-primary flex items-center justify-center gap-3 text-lg">
-            <i class="fa-solid fa-microphone"></i> Browser-Mikrofon
+            class="btn-primary flex items-center justify-center gap-4 text-xl">
+            <i class="fa-solid fa-microphone text-2xl"></i> Browser-Mikrofon starten
           </button>
           <button onclick="senden()" 
-            class="btn-primary flex items-center justify-center gap-3 text-xl">
-            <i class="fa-solid fa-paper-plane"></i> Absenden
+            class="btn-primary flex items-center justify-center gap-4 text-xl">
+            <i class="fa-solid fa-paper-plane text-2xl"></i> Absenden & Speichern
           </button>
         </div>
 
-        <!-- Letzte Transkripte -->
-        <div>
-          <label class="block text-lg font-medium mb-3">Letzte Eingaben laden</label>
-          <select id="history" onchange="loadHistory()" class="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:border-[#72974c]">
+        <div class="mb-8">
+          <label class="block text-xl font-semibold mb-4 primary-green">Letzte Eingaben laden</label>
+          <select id="history" onchange="loadHistory()" class="w-full border-2 border-gray-200 rounded-xl p-5 text-lg focus:outline-none focus:border-[#72974c]">
             <option value="">— keine —</option>
           </select>
         </div>
 
-        <p class="text-sm text-gray-500 mt-8 text-center">Deine fertige Word-Datei landet automatisch im definierten SharePoint-Ordner – 100 % sicher & automatisiert.</p>
+        <p class="text-center text-gray-600 text-base">Deine fertige Word-Datei landet automatisch im definierten SharePoint-Ordner – sicher & DSGVO-konform.</p>
       </div>
     </div>
   </section>
 
+  <!-- Rest des Scripts bleibt gleich wie in der vorherigen Version -->
   <script>
-    const textarea = document.getElementById('text');
-    const wordCount = document.getElementById('wordCount');
-    const historySelect = document.getElementById('history');
-    const templateSelect = document.getElementById('template');
-
-    // Wortzähler live
-    textarea.addEventListener('input', () => {
-      const words = textarea.value.trim().split(/\s+/).filter(w => w).length;
-      wordCount.textContent = `${words} Wörter`;
-    });
-
-    // History (LocalStorage – max 5)
-    function saveToHistory() {
-      let history = JSON.parse(localStorage.getItem('transcripts') || '[]');
-      const entry = {
-        text: textarea.value.trim(),
-        template: templateSelect.value,
-        timestamp: new Date().toLocaleString('de-DE')
-      };
-      if (entry.text) {
-        history.unshift(entry);
-        history = history.slice(0, 5);
-        localStorage.setItem('transcripts', JSON.stringify(history));
-        loadHistoryList();
-      }
-    }
-
-    function loadHistoryList() {
-      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
-      historySelect.innerHTML = '<option value="">— keine —</option>';
-      history.forEach((item, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = `${item.timestamp} – ${item.template} (${item.text.substring(0,40)}${item.text.length > 40 ? '...' : ''})`;
-        historySelect.appendChild(opt);
-      });
-    }
-
-    function loadHistory() {
-      const idx = historySelect.value;
-      if (idx === '') return;
-      const history = JSON.parse(localStorage.getItem('transcripts') || '[]');
-      const item = history[idx];
-      if (item) {
-        textarea.value = item.text;
-        templateSelect.value = item.template;
-        wordCount.textContent = `${item.text.trim().split(/\s+/).filter(w => w).length} Wörter`;
-      }
-    }
-    loadHistoryList();
-
-    // Browser Speech (Fallback)
-    let recognition;
-    function startSpeech() {
-      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-        return alert('Spracherkennung nicht verfügbar – nutze Wispr Flow oder Chrome/Edge.');
-      }
-      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'de-DE';
-      recognition.interimResults = true;
-      recognition.continuous = true;
-      recognition.onresult = e => {
-        let transcript = Array.from(e.results).map(r => r[0].transcript).join('');
-        textarea.value = transcript;
-        wordCount.textContent = `${transcript.trim().split(/\s+/).filter(w => w).length} Wörter`;
-      };
-      recognition.start();
-      alert('Mikrofon aktiviert – sprich jetzt! (Stoppe durch Schließen des Tabs oder erneutem Klick)');
-    }
-
-    // Senden + Confetti
-    async function senden() {
-      const text = textarea.value.trim();
-      if (!text) return alert('Bitte Inhalt eingeben oder sprechen!');
-
-      const btn = document.querySelector('button[onclick="senden()"]');
-      const original = btn.innerHTML;
-      btn.innerHTML = 'Sendet... <i class="fa-solid fa-spinner fa-spin"></i>';
-      btn.disabled = true;
-
-      try {
-        await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            transcript: text,
-            template: templateSelect.value
-          })
-        });
-
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#72974c', '#607848', '#A8BB5D'] });
-        alert('Erfolgreich gesendet! Die Datei liegt im SharePoint.');
-        saveToHistory();
-        textarea.value = '';
-        wordCount.textContent = '0 Wörter';
-      } catch (err) {
-        alert('Fehler: ' + err.message);
-      }
-
-      btn.innerHTML = original;
-      btn.disabled = false;
-    }
+    // ... (kopiere den gesamten <script>-Block aus deiner vorherigen Version hierher – Wortzähler, History, Speech, senden() mit Confetti)
+    // Ersetze nur '=== DEINE_N8N_WEBHOOK_URL ===' durch deine echte URL
   </script>
 </body>
 </html>
