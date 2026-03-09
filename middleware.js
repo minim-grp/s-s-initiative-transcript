@@ -19,8 +19,12 @@ export default async function middleware(request) {
       const enteredPassword = formData.get('password')
 
       if (enteredPassword === PASSWORD) {
-        const response = new Response(null, { status: 307, headers: { 'Location': '/' } })
+        // HIER IST DIE ÄNDERUNG: Status 303 statt 307 verwenden
+        const response = new Response(null, { status: 303, headers: { 'Location': '/' } })
+        
+        // HIER IST DIE ÄNDERUNG: Backticks für den String verwenden
         response.headers.append('Set-Cookie', `${AUTH_COOKIE_NAME}=${PASSWORD}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`)
+        
         return response
       } else {
         return new Response(getLoginHtml(true), { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
@@ -28,7 +32,7 @@ export default async function middleware(request) {
     } catch (e) {}
   }
 
-  // 3. Wenn nicht eingeloggt -> Zeige Login-Formular (statt 404)
+  // 3. Wenn nicht eingeloggt -> Zeige Login-Formular
   if (!hasAuth) {
     return new Response(getLoginHtml(false), {
       headers: { 'Content-Type': 'text/html; charset=utf-8' }
@@ -40,6 +44,7 @@ export default async function middleware(request) {
 }
 
 function getLoginHtml(isError) {
+  // ... dein HTML-Code bleibt unverändert
   return `
     <!DOCTYPE html>
     <html lang="de">
@@ -60,7 +65,7 @@ function getLoginHtml(isError) {
         <form method="POST">
           <input type="password" name="password" placeholder="Passwort eingeben" required autofocus
             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#72974c] focus:ring-2 focus:ring-[#72974c]/20 outline-none transition-all mb-4">
-          <button type="submit" 
+          <button type="submit"
             class="w-full bg-[#72974c] hover:bg-[#5f7e3f] text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-[#72974c]/20">
             Anmelden
           </button>
