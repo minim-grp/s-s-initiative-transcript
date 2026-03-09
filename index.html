@@ -65,7 +65,7 @@
     </div>
   </nav>
 
-  <!-- Hauptbereich – direkt das Eingabefeld -->
+  <!-- Hauptbereich -->
   <main class="pt-24 pb-16">
     <div class="container-xl max-w-5xl">
       <div class="glass-card p-8 md:p-12">
@@ -82,9 +82,9 @@
           <div class="hint-box max-w-3xl mx-auto text-left">
             <strong>Wichtig – so funktioniert es richtig:</strong><br>
             Beginne deine Spracheingabe <strong>immer zuerst</strong> mit dem Kunden- oder Projektnamen.<br>
-            <strong>Beispiel:</strong> „Kunde Müller – Neubau 2026. Die geplante Initiative umfasst...“<br>
+            <strong>Beispiel:</strong> „Kunde Müller – Neubau 2026. Die geplante Initiative umfasst..."<br>
             <span class="text-sm text-gray-600 mt-1 block">
-              n8n erkennt den Kunden automatisch aus dem Anfang des Transkripts und speichert die Datei im passenden Ordner.
+              Das System erkennt den Kunden automatisch aus dem Anfang des Transkripts und speichert die Datei im passenden Ordner.
             </span>
           </div>
         </div>
@@ -116,7 +116,7 @@
 
         <p class="text-center text-gray-600 mt-8 text-base">
           Die fertige Word-Datei wird automatisch in deinem SharePoint-Ordner gespeichert – 
-          n8n erkennt den Kunden aus dem Anfang deines Transkripts.
+          das System erkennt den Kunden aus dem Anfang deines Transkripts.
         </p>
       </div>
     </div>
@@ -160,7 +160,7 @@
         return;
       }
 
-      // Optional: Warnung, wenn kein Kunde erkennbar ist
+      // Warnung, wenn kein Kunde erkennbar ist
       if (!text.match(/(Kunde|Projekt|Kundin|Firma)/i)) {
         if (!confirm('Du hast keinen Kunden oder Projektnamen genannt. Trotzdem senden?')) {
           return;
@@ -173,7 +173,7 @@
       btn.disabled = true;
 
       try {
-        await fetch('=== DEINE_N8N_WEBHOOK_URL ===', {
+        await fetch('https://app.langdock.com/api/hooks/workflows/b1f90c1e-ded7-4748-8380-93b202b07d60', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ transcript: text })
