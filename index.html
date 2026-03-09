@@ -173,7 +173,8 @@
       btn.disabled = true;
 
       try {
-        await fetch('https://app.langdock.com/api/hooks/workflows/b1f90c1e-ded7-4748-8380-93b202b07d60', {
+          await fetch('/api/submit', {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ transcript: text })
